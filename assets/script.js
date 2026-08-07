@@ -20,27 +20,28 @@
     });
   }
 
-  // Reveal on scroll — with above-the-fold fallback so heroes never stay hidden
+  // Reveal on scroll. CSS keeps .reveal fully visible unless body.js-ready is set,
+  // so if JS never runs the page still shows. Once js-ready is on, we control the fade.
+  document.body.classList.add('js-ready');
   const reveals = document.querySelectorAll('.reveal');
   const revealNow = (el) => el.classList.add('in');
+  const revealInViewport = () => {
+    reveals.forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0) revealNow(el);
+    });
+  };
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) {
-          revealNow(e.target);
-          io.unobserve(e.target);
-        }
+        if (e.isIntersecting) { revealNow(e.target); io.unobserve(e.target); }
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
     reveals.forEach((el) => io.observe(el));
-    // Immediate fallback: anything already in the initial viewport should show now,
-    // even if the observer's first callback misses it (some browsers race on load).
-    requestAnimationFrame(() => {
-      reveals.forEach((el) => {
-        const r = el.getBoundingClientRect();
-        if (r.top < window.innerHeight && r.bottom > 0) revealNow(el);
-      });
-    });
+    // Immediate + delayed fallback for anything already in the initial viewport.
+    revealInViewport();
+    requestAnimationFrame(revealInViewport);
+    setTimeout(revealInViewport, 200);
   } else {
     reveals.forEach(revealNow);
   }
