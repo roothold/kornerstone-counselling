@@ -20,20 +20,29 @@
     });
   }
 
-  // Reveal on scroll
+  // Reveal on scroll — with above-the-fold fallback so heroes never stay hidden
   const reveals = document.querySelectorAll('.reveal');
+  const revealNow = (el) => el.classList.add('in');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) {
-          e.target.classList.add('in');
+          revealNow(e.target);
           io.unobserve(e.target);
         }
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
     reveals.forEach((el) => io.observe(el));
+    // Immediate fallback: anything already in the initial viewport should show now,
+    // even if the observer's first callback misses it (some browsers race on load).
+    requestAnimationFrame(() => {
+      reveals.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight && r.bottom > 0) revealNow(el);
+      });
+    });
   } else {
-    reveals.forEach((el) => el.classList.add('in'));
+    reveals.forEach(revealNow);
   }
 
   // FAQ accordion
