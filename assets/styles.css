@@ -261,3 +261,15 @@ p { margin: 0 0 14px; text-wrap: pretty; }
   .hero__actions .btn { width: 100%; }
   .container { padding-inline: 22px; }
 }
+
+
+/* Sister-site bar (above header), counselling palette variant */
+.sister-bar { background: var(--ink); color: #cfd4df; font-size: 12.5px; border-bottom: 1px solid rgba(255,255,255,.06); }
+.sister-bar__inner { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; gap: 20px; flex-wrap: wrap; }
+.sister-bar__who { font-family: var(--display); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; font-size: 11px; color: var(--muted-d); }
+.sister-bar__link { color: #fff; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+.sister-bar__link:hover { color: var(--gold); }
+@media (max-width: 560px) {
+  .sister-bar__who { display: none; }
+  .sister-bar__inner { justify-content: center; }
+}
